@@ -25,4 +25,8 @@ config.py is meant to be easily edited by the user.
 # Testing
 Run a testing script from the test directory (e.g. test1.py) as follows:
 
-    >> python -m unittest tests/test1.py
+    >> python -m unittest test.test1
+
+or all tests via:
+
+    >> python -m unittest discover
