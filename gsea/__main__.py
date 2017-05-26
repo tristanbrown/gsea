@@ -3,7 +3,6 @@ Main routine of GSEA.
 """
 
 import sys
-import os
 import config
 from dataprep import IO
 from batchanalysis import Analyzer
@@ -12,18 +11,16 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
         
-    infile1 = os.path.join(config.path['input'], args[0])
-    infile2 = os.path.join(config.path['input'], args[1])
-    outfile = os.path.join(config.path['output'], 'results.csv')
+    gep_file = IO(args[0], config.path['input'])
+    geneset_file = IO(args[1], config.path['input'])
+    out_file = IO('results.csv', config.path['output'])
     
-    print("File found?")
-    print(os.path.exists(infile1))
-    print(os.path.exists(infile2))
-    print(os.path.exists(outfile))
-    
-    A = Analyzer(infile1, infile2, outfile, config.analysis)
-    A.analyzesets()
-    A.writeresults()
+    A = Analyzer(gep_file.loadarray(),
+                    geneset_file.loadgeneset(),
+                    config.analysis
+                )
+    results = A.analyzesets()
+    out_file.writecsv(results)
 
 if __name__ == "__main__":
     main()

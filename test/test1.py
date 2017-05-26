@@ -1,6 +1,7 @@
 import unittest
 
 from gsea import config
+from gsea import dataprep
 from gsea import batchanalysis
 
 class FileStructureTestCase(unittest.TestCase):

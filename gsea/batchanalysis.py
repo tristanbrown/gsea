@@ -4,19 +4,15 @@ multiple gene sets, producing an output file tabulating the results.
 """
 
 import numpy as np
-import csv
 from gsea.ranker import Ranker
 
 class Analyzer():
     """
     """
-    def __init__(self, expression_file, geneset_file, outfile, parameters):
+    def __init__(self, expression_data, geneset_data, parameters):
         
-        self.outfile = outfile
-        
-        self.gepdata = self.loadgep(expression_file)
-        self.genesets = self.loadgeneset(geneset_file)
-        
+        self.gepdata = expression_data
+        self.genesets = geneset_data
         self.params = parameters
     
     def rank(self):
@@ -26,7 +22,7 @@ class Analyzer():
     def analyzesets(self):
         
         self.rank()
-        self.nes_table = self.loop_genesets(self.genesets)
+        return self.loop_genesets(self.genesets)
     
     def loop_genesets(self, genesets):
         return np.array([self.analyzeset(a_set) for a_set in genesets])
@@ -40,17 +36,3 @@ class Analyzer():
         # return (nes, p_stat)
         return None
         
-    def loadgep(self, filename):
-        return np.genfromtxt(filename, delimiter='\t', dtype=None,
-                                skip_header=0)
-    
-    def loadgeneset(self, filename):
-        return []
-    
-    def writecsv(self, filename, data):
-        with open(filename, 'w', newline='\n') as f:
-            writer = csv.writer(f)
-            writer.writerows(data)
-    
-    def writeresults(self):
-        self.writecsv(self.outfile, self.nes_table)
