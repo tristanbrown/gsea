@@ -5,15 +5,17 @@ multiple gene sets, producing an output file tabulating the results.
 
 import numpy as np
 import csv
+from .ranker import Ranker
 
 class Analyzer():
-    def __init__(self, expression_file, geneset_file, outfile,
-                    permut=1000, p_weight=1.0):
+    def __init__(self, expression_file, geneset_file, outfile, parameters):
         
         self.outfile = outfile
         
         self.gepdata = self.loadgep(expression_file)
         self.genesets = self.loadgeneset(geneset_file)
+        
+        self.ranked = Ranker(self.gepdata, parameters['rankby'])
         
     def loadgep(self, filename):
         return np.genfromtxt(filename, delimiter='\t', dtype=None,
