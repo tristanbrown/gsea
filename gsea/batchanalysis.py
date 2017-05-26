@@ -17,10 +17,13 @@ class Analyzer():
         
         self.params = parameters
     
-    def analyzesets(self):
-        
+    def rank(self):
         self.ranked = Ranker(self.gepdata, self.params['rankby'])
         # self.permuted = Permuter(self.gepdata, self.params['permutations'])
+    
+    def analyzesets(self):
+        
+        self.rank()
         self.nes_table = self.loop_genesets(self.genesets)
     
     def loop_genesets(self, genesets):
