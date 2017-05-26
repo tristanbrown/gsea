@@ -2,7 +2,8 @@
 Python implementation of the Gene Set Enrichment Analysis method
 
 # Installation and dependencies
-A setup.py file will be generated in the future. 
+Above the directory containing setup.py, install using:
+    >>pip install -e gsea
 
 This software has been tested in an Anaconda environment containing the 
 following packages and their respective dependencies:
@@ -10,8 +11,7 @@ following packages and their respective dependencies:
 - numpy (v. 1.12.1)
 
 # Usage
-Currently, the package can be run from the top directory (containing this
-README, etc.) as follows:
+Currently, the package can be run from the root directory as follows:
 
     >> python gsea <filename1> <filename2>
     
@@ -23,7 +23,7 @@ python path), the output filename, as well as several analysis parameters.
 config.py is meant to be easily edited by the user. 
 
 # Testing
-Run a testing script from the test directory (e.g. test1.py) as follows:
+Run a testing script (e.g. test1.py) as follows:
 
     >> python -m unittest test.test1
 
