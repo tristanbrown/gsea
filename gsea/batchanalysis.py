@@ -15,16 +15,37 @@ class Analyzer():
         self.gepdata = self.loadgep(expression_file)
         self.genesets = self.loadgeneset(geneset_file)
         
-        self.ranked = Ranker(self.gepdata, parameters['rankby'])
+        self.params = parameters
+    
+    def analyzesets(self):
+        
+        self.ranked = Ranker(self.gepdata, self.params['rankby'])
+        # self.permuted = Permuter(self.gepdata, self.params['permutations'])
+        self.nes_table = self.loop_genesets(self.genesets)
+    
+    def loop_genesets(self, genesets):
+        return np.array([self.analyzeset(a_set) for a_set in genesets])
+        
+        
+    def analyzeset(self, geneset):
+        # es = ES_calc(self.ranked, self.params['p_weight'])
+        # es_p = ES_P_calc(self.permuted, self.params['p_weight'])
+        # p_stat = P_calc(es, es_p)
+        # nes = NES_calc(es, es_p)
+        # return (nes, p_stat)
+        return None
         
     def loadgep(self, filename):
         return np.genfromtxt(filename, delimiter='\t', dtype=None,
                                 skip_header=0)
     
     def loadgeneset(self, filename):
-        pass
+        return []
     
     def writecsv(self, filename, data):
         with open(filename, 'w', newline='\n') as f:
             writer = csv.writer(f)
             writer.writerows(data)
+    
+    def writeresults(self):
+        self.writecsv(self.outfile, self.nes_table)

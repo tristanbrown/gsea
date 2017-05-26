@@ -21,6 +21,8 @@ def main(args=None):
     print(os.path.exists(outfile))
     
     A = Analyzer(infile1, infile2, outfile, config.analysis)
+    A.analyzesets()
+    A.writeresults()
 
 if __name__ == "__main__":
     main()
