@@ -4,8 +4,8 @@ Main routine of GSEA.
 
 import sys
 import os
-from . import config
-from .batchanalysis import Analyzer
+import config
+from batchanalysis import Analyzer
 
 def main(args=None):
     if args is None:

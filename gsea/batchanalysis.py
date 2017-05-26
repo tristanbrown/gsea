@@ -5,7 +5,7 @@ multiple gene sets, producing an output file tabulating the results.
 
 import numpy as np
 import csv
-from .ranker import Ranker
+from gsea.ranker import Ranker
 
 class Analyzer():
     def __init__(self, expression_file, geneset_file, outfile, parameters):

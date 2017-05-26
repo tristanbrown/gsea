@@ -2,7 +2,8 @@
 Python implementation of the Gene Set Enrichment Analysis method
 
 # Installation and dependencies
-A setup.py file will be generated in the future. 
+Install using:
+    >>python -m pip install gsea
 
 This software has been tested in an Anaconda environment containing the 
 following packages and their respective dependencies:
