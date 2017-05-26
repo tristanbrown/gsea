@@ -5,6 +5,7 @@ Main routine of GSEA.
 import sys
 import os
 import config
+from dataprep import IO
 from batchanalysis import Analyzer
 
 def main(args=None):

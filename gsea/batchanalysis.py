@@ -8,6 +8,8 @@ import csv
 from gsea.ranker import Ranker
 
 class Analyzer():
+    """
+    """
     def __init__(self, expression_file, geneset_file, outfile, parameters):
         
         self.outfile = outfile
