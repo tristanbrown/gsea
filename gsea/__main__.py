@@ -10,16 +10,22 @@ from batchanalysis import Analyzer
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
-        
-    gep_file = IO(args[0], config.path['input'])
-    geneset_file = IO(args[1], config.path['input'])
+    
+    # Acquire the data and check the output path. 
+    
+    gep_data = IO(args[0], config.path['input']).loadarray()
+    geneset_data = IO(args[1], config.path['input']).loadgeneset()
+        #Acquire ahead of time and loop over the array, or just acquire one row
+        #at a time? 
     out_file = IO('results.csv', config.path['output'])
     
-    A = Analyzer(gep_file.loadarray(),
-                    geneset_file.loadgeneset(),
-                    config.analysis
-                )
+    # Analyze the data.
+    
+    A = Analyzer(gep_data, geneset_data, config.analysis)
     results = A.analyzesets()
+    
+    # Write the results.
+    
     out_file.writecsv(results)
 
 if __name__ == "__main__":
