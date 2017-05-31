@@ -5,6 +5,9 @@ expression profile according to a given algorithm.
 
 import numpy as np
 
-class Ranker():
-    def __init__(self, data, analysis):
+class Gene_Expression_Profile():
+    def __init__(self, data):
+        self.data = data
+        
+    def rank(self, method):
         print("Ranker here.")

@@ -3,26 +3,22 @@ Main routine of GSEA.
 """
 
 import sys
-import os
 import config
-from batchanalysis import Analyzer
+from analysis import Analysis
 
 def main(args=None):
+    
+    # Determine filenames.
+    
     if args is None:
         args = sys.argv[1:]
-        
-    infile1 = os.path.join(config.path['input'], args[0])
-    infile2 = os.path.join(config.path['input'], args[1])
-    outfile = os.path.join(config.path['output'], 'results.csv')
+ 
+    out_name = 'results.csv'
     
-    print("File found?")
-    print(os.path.exists(infile1))
-    print(os.path.exists(infile2))
-    print(os.path.exists(outfile))
+    # Analyze the data and write the results.
     
-    A = Analyzer(infile1, infile2, outfile, config.analysis)
-    A.analyzesets()
-    A.writeresults()
+    A = Analysis(config.analysis)
+    A.analyzefiles(args[0], args[1], out_name, config.path)
 
 if __name__ == "__main__":
     main()
