@@ -12,13 +12,12 @@ class IO():
     from an existing text file, or writes data to a text file. 
     """
     def __init__(self, filename, dir=''):
-        print("Extractor here.")
         self.fn = os.path.join(dir, filename)
 
         if os.path.exists(self.fn):
-            print("%s successfully loaded" % self.fn)
+            print("%s found." % self.fn)
         else:
-            raise
+            print("%s does not yet exist." % self.fn)
     
     def load_array_with_labels(self, delim=',', datatype='int',
                                     coltype='str', rowtype='str'):
@@ -47,9 +46,6 @@ class IO():
             outputs = [func(row.split(delim), *args)
                         for row in file.readlines()]
         return outputs
-    
-    def loadgeneset(self):
-        return []
     
     def writecsv(self, data):
         with open(self.fn, 'w', newline='\n') as f:

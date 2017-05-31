@@ -10,7 +10,7 @@ path = dict(
     )
 
 analysis = dict(
-    permutations = 1000,
-    p_weight = 1.0,
-    rankby = 's2n'
+    rankby = 's2n',
+    permut = 1000,
+    p_weight = 1.0
     )
