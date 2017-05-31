@@ -9,7 +9,7 @@ import numpy as np
 
 class IO():
     """An object that points to a desired file location and either extracts data
-    from an existing text file as a numpy array, or writes data to a text file. 
+    from an existing text file, or writes data to a text file. 
     """
     def __init__(self, filename, dir=''):
         print("Extractor here.")
@@ -19,10 +19,6 @@ class IO():
             print("%s successfully loaded" % self.fn)
         else:
             raise
-    
-    def load_array(self):
-        return np.genfromtxt(self.fn, delimiter='\t', dtype=None,
-                                skip_header=0)
     
     def load_array_with_labels(self, delim=',', datatype='int',
                                     coltype='str', rowtype='str'):
@@ -42,6 +38,15 @@ class IO():
                                 skip_header=1, usecols=range(1, num_col+1))
         
         return (data, col_labels, row_labels)
+    
+    def row_analysis(self, func, *args, delim=','):
+        """Applies the given analysis to every row in a file, returning the 
+        outputs as a list. 
+        """
+        with open(self.fn, 'r') as file:
+            outputs = [func(row.split(delim), *args)
+                        for row in file.readlines()]
+        return outputs
     
     def loadgeneset(self):
         return []
