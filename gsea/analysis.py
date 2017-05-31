@@ -30,11 +30,11 @@ class Analysis():
         
         # Create ranked and permuted/ranked data.
         
-        gep_data, genes, phens = gep_file.load_array_with_labels(delim='\t')
+        gep_data = gep_file.load_array_with_labels(delim='\t')
+        gep = Gene_Expression_Profile(*gep_data)
         
-        ranked = []
-        
-        permuted = []
+        ranked = gep.rank(self.rankby)
+        permuted = gep.permute(self.permut)
         
         # Loop analysis over gene sets. 
         
@@ -44,12 +44,6 @@ class Analysis():
         # Write the data to an output file. 
         
         out_file.writecsv(results)
-    
-    def rank(self):
-        gep = Gene_Expression_Profile(self.gepdata)
-        self.ranked = gep.rank(self.params['rankby'])
-        # self.permuted = Permuter(self.gepdata, self.params['permutations'])
-        
         
     def analyzeset(self, geneset, ranked, permuted):
         # es = ES_calc(self.ranked, self.params['p_weight'])
