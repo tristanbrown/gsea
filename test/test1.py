@@ -2,7 +2,7 @@ import unittest
 
 from gsea import config
 from gsea import dataprep
-from gsea import batchanalysis
+from gsea import analysis
 
 class FileStructureTestCase(unittest.TestCase):
     def setUp(self):

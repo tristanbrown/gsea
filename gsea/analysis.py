@@ -4,9 +4,9 @@ multiple gene sets, producing an output file tabulating the results.
 """
 
 import numpy as np
-from gsea.ranker import Ranker
+from gsea.gep import Gene_Expression_Profile
 
-class Analyzer():
+class Analysis():
     """
     """
     def __init__(self, expression_data, geneset_data, parameters):
@@ -16,7 +16,8 @@ class Analyzer():
         self.params = parameters
     
     def rank(self):
-        self.ranked = Ranker(self.gepdata, self.params['rankby'])
+        gep = Gene_Expression_Profile(self.gepdata)
+        self.ranked = gep.rank(self.params['rankby'])
         # self.permuted = Permuter(self.gepdata, self.params['permutations'])
     
     def analyzesets(self):

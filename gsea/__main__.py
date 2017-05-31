@@ -5,7 +5,7 @@ Main routine of GSEA.
 import sys
 import config
 from dataprep import IO
-from batchanalysis import Analyzer
+from analysis import Analysis
 
 def main(args=None):
     if args is None:
@@ -22,7 +22,7 @@ def main(args=None):
     
     # Analyze the data.
     
-    A = Analyzer(gep_data, geneset_data, config.analysis)
+    A = Analysis(gep_data, geneset_data, config.analysis)
     results = A.analyzesets()
     
     # Write the results.
