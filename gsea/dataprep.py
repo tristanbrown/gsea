@@ -14,12 +14,34 @@ class IO():
     def __init__(self, filename, dir=''):
         print("Extractor here.")
         self.fn = os.path.join(dir, filename)
-        print("File found?")
-        print(os.path.exists(self.fn))
+
+        if os.path.exists(self.fn):
+            print("%s successfully loaded" % self.fn)
+        else:
+            raise
     
-    def loadarray(self):
+    def load_array(self):
         return np.genfromtxt(self.fn, delimiter='\t', dtype=None,
                                 skip_header=0)
+    
+    def load_array_with_labels(self, delim=',', datatype='int',
+                                    coltype='str', rowtype='str'):
+        """Used for extracting data from text files with row and column labels.
+        Returns a tuple containing 3 arrays: the data, the column labels,
+        and the row labels.
+        
+        The optional arguments allow the user to choose the delimiter, as well
+        as specifying the types for the labels and data. 
+        """
+        with open(self.fn, 'r') as f:
+            col_labels = np.array(f.readline().split()[1:], dtype=coltype)
+        num_col = len(col_labels)
+        row_labels = np.genfromtxt(self.fn, delimiter=delim, dtype=rowtype, 
+                                skip_header=1, usecols=0)
+        data = np.genfromtxt(self.fn, delimiter=delim, dtype=datatype, 
+                                skip_header=1, usecols=range(1, num_col+1))
+        
+        return (data, col_labels, row_labels)
     
     def loadgeneset(self):
         return []

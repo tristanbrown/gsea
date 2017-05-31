@@ -9,6 +9,7 @@ class FileStructureTestCase(unittest.TestCase):
         pass
     
     def test_file_io(self):
-        A = batchanalysis.Analyzer('data/leukemia.txt', 'data/pathways.txt',
-                                    'data/test_out.txt', config.analysis)
-        A.writecsv(A.outfile, A.gepdata)
+        gep_file = dataprep.IO('leukemia.txt', 'data') 
+        gep_data = gep_file.load_array_with_labels(delim='\t')
+        print("Gene Expression Data:")
+        print(gep_data)
