@@ -11,10 +11,42 @@ class Gene_Expression_Profile():
         self.genes = genes
         self.phenos = phenos
         
-    def rank(self, method):
-        print("Ranker here.")
-        return []
+        # Setting the default metric:
+        self.select_metric('s2n')
+        
+    def rank_genes(self):
+        """Gives the ranked and sorted gene labels according to the initialized
+        data."""
+        print("Ranking genes.")
+        return self.rank_by_metric(self.phenos, self.metric)
     
-    def permute(self, iters):
+    def permuted_rank(self):
+        """Gives the ranked and sorted gene labels after permuting the
+        phenotype classes."""
+        print("Permuting and ranking genes.")
+        return self.rank_by_metric(np.random.permutation(self.phenos),
+                                        self.metric)
+    
+    def permutations(self, n):
+        """Returns an array of n ranked gene arrays, each generated from a 
+        permutation of the phenotype classes."""
         print("Permuter here.")
         return []
+    
+    def rank_by_metric(self, categories, metric):
+        """Returns a ranked and sorted array of gene labels according to a
+        metric used to score each line of data. The category (phenotype) labels
+        must be taken into account in the metrics.
+        """
+        return []
+    
+    def select_metric(self, label=None):
+        """Select a method for assigning a score to 1d arrays of numbers."""
+        if label == None:
+            raise
+        elif label == 's2n':
+            self.metric = self.signal2noise
+        print("Metric set as %s." % label)
+    
+    def signal2noise(self, data, categories):
+        return 0
