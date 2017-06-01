@@ -36,7 +36,7 @@ class IO():
         data = np.genfromtxt(self.fn, delimiter=delim, dtype=datatype, 
                                 skip_header=1, usecols=range(1, num_col+1))
         
-        return (data, col_labels, row_labels)
+        return (data, row_labels, col_labels)
     
     def row_analysis(self, func, *args, delim=','):
         """Applies the given analysis to every row in a file, returning the 
