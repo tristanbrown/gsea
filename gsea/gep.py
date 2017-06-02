@@ -19,14 +19,16 @@ class Gene_Expression_Profile():
         """Gives the ranked and sorted gene labels according to the initialized
         data."""
         print("Ranking genes.")
-        return self.rank_by_metric(np.copy(self.genes), self.phenos)
+        indices = self.rank_by_metric(np.copy(self.genes), self.phenos)
+        return self.genes[indices]
     
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
         phenotype classes."""
         # print("Permuting and ranking genes.")
-        return self.rank_by_metric(np.copy(self.genes), 
+        indices = self.rank_by_metric(np.copy(self.genes), 
                                         np.random.permutation(self.phenos))
+        return self.genes[indices]
     
     def permutations(self, m):
         """Returns an m x n array of m ranked n-length gene arrays, each
@@ -58,7 +60,7 @@ class Gene_Expression_Profile():
         return permuted_genes
     
     def rank_by_metric(self, unranked, categories):
-        """Returns a ranked and sorted array of gene labels according to a
+        """Returns an array of ranking indices for gene labels according to a
         metric used to score each line of data. The category (phenotype) labels
         must be taken into account in the metrics.
         """
@@ -69,12 +71,7 @@ class Gene_Expression_Profile():
         data2 = self.data[:,cat2[0]]
         
         scores = self.metric(data1, data2)
-        indices = np.argsort(scores)
-        
-        ranked = unranked[indices]
-        print(ranked)
-        
-        return ranked
+        return np.argsort(scores)
     
     def select_metric(self, label=None):
         """Select a method for assigning a score to 1d arrays of numbers."""
