@@ -4,6 +4,7 @@ expression profile according to a given algorithm.
 """
 
 import numpy as np
+import time
 
 class Gene_Expression_Profile():
     def __init__(self, data, genes, phenos):
@@ -23,7 +24,7 @@ class Gene_Expression_Profile():
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
         phenotype classes."""
-        print("Permuting and ranking genes.")
+        # print("Permuting and ranking genes.")
         return self.rank_by_metric(np.random.permutation(self.phenos),
                                         self.metric)
     
@@ -31,11 +32,29 @@ class Gene_Expression_Profile():
         """Returns an m x n array of m ranked n-length gene arrays, each
         generated from a permutation of the phenotype classes."""
         print("Permuter here.")
-        n = len(self.genes)
+        
+        # map(np.random.shuffle, phenos)
+        time1 = time.time()
+        phenos = np.tile(self.phenos, (m, 1))
+        for row in range(m):
+            np.random.shuffle(phenos[row])
+        for row in range(m):
+            phenos[row]
+        time2 = time.time()
+        
+        for row in range(m):
+            x = np.random.permutation(self.phenos)
+        time3 = time.time()
+        
+        print(time2 - time1)
+        print(time3 - time2)
+        
         permuted_genes = np.tile(self.genes, (m, 1))
         permuted_genes[0][0] = 'mod'
         
+        print(phenos)
         print(permuted_genes)
+        
         return permuted_genes
     
     def rank_by_metric(self, categories, metric):
@@ -43,6 +62,17 @@ class Gene_Expression_Profile():
         metric used to score each line of data. The category (phenotype) labels
         must be taken into account in the metrics.
         """
+        cat1 = np.where(categories == self.phenos[0])
+        cat2 = np.where(categories != self.phenos[0])
+        
+        data1 = self.data[:,cat1[0]]
+        data2 = self.data[:,cat2[0]]
+        
+        print(data1)
+        print(data2)
+        
+        scores = metric(data1, data2)
+        
         ranked_genes = np.copy(self.genes)
         
         return ranked_genes
@@ -55,5 +85,6 @@ class Gene_Expression_Profile():
             self.metric = self.signal2noise
         print("Metric set as %s." % label)
     
-    def signal2noise(self, data, categories):
+    def signal2noise(self, data1, data2):
+        
         return 0
