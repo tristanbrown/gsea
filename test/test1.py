@@ -13,7 +13,7 @@ class FileStructureTestCase(unittest.TestCase):
         gep_data = gep_file.load_array_with_labels(delim='\t')
         # print("Gene Expression Data:")
         # print(gep_data)
-        data, phenos, genes = gep_data
+        data, genes, phenos = gep_data
         assert len(data) == len(genes)
         assert len(data[0]) == len(phenos)
         assert data[0][0] == -13
@@ -29,3 +29,8 @@ class FileStructureTestCase(unittest.TestCase):
         assert len(geneset_data) == 522
         assert len(geneset_data[0]) == 20
         assert len(geneset_data[-1]) == 77
+    
+    def test_full_analysis(self):
+        A = analysis.Analysis(config.analysis)
+        A.analyzefiles('leukemia.txt', 'pathways.txt', 'test_out.csv',
+                        config.path)
