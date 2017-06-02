@@ -7,6 +7,13 @@ import numpy as np
 import time
 
 class Gene_Expression_Profile():
+    """An object that contains expression profile data, each with a gene and 
+    one of two phenotype labels. These gene labels can be ranked through
+    metrics generated from statistical comparisons between the data from each
+    phenotype. The phenotype labels can be permuted an given number of
+    times to re-rank the gene labels and establish a baseline for significance
+    of the unpermuted data. 
+    """
     def __init__(self, data, genes, phenos):
         self.data = data
         self.genes = genes
@@ -31,26 +38,9 @@ class Gene_Expression_Profile():
     def permutations(self, m):
         """Returns an m x n array of m ranked n-length gene arrays, each
         generated from a permutation of the phenotype classes."""
-        print("Permuter here.")
+        print("Permuting phenotypes and ranking genes %s times." % str(m))
+        return np.array([self.permuted_rank() for i in range(m)])
         
-        n = len(self.genes)
-        maxstr = len(max(self.genes, key=len))
-        # permuted_genes = np.tile(self.genes, (m, 1))
-        # permuted_genes = np.empty([m, n], dtype=('str', maxstr))
-        permuted_genes = []
-        # phenos = np.tile(self.phenos, (m, 1))
-        print(permuted_genes)
-        for row in range(m):
-            # np.random.shuffle(phenos[row]) # 2.423s
-            # permuted_genes[row] = self.rank_by_metric(self.genes, phenos[row])
-            permuted_genes.append(self.permuted_rank())
-        
-        # print(phenos)
-        permuted_genes = np.array(permuted_genes)
-        print(permuted_genes)
-        
-        return permuted_genes
-    
     def rank_by_metric(self, unranked, categories):
         """Returns an array of ranking indices for gene labels according to a
         metric used to score each line of data. The category (phenotype) labels
@@ -76,6 +66,7 @@ class Gene_Expression_Profile():
         print("Metric set as %s." % label)
     
     def signal2noise(self, data1, data2):
+        """A ranking metric based on two phenotype categories."""
         mean1 = np.mean(data1, axis=1)
         mean2 = np.mean(data2, axis=1)
         
