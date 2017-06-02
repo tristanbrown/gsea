@@ -27,8 +27,20 @@ class Gene_Expression_Profile():
             return self._ranked
         except:
             print("Ranking genes.")
-            self._ranked = self.rank_by_metric(self.genes, self.phenos)
+            self._ranked, self._score =( 
+                self.rank_by_metric(self.genes, self.phenos)
+                )
             return self._ranked
+    
+    @property
+    def score(self):
+        """Gives the sorted scores for ranked gene labels."""
+        try:
+            return self._score
+        except:
+            print("Ranking genes.")
+            a = self.ranked
+            return self._score
     
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
@@ -41,12 +53,22 @@ class Gene_Expression_Profile():
         """Returns an m x n array of m ranked n-length gene arrays, each
         generated from a permutation of the phenotype classes."""
         print("Permuting phenotypes and ranking genes %s times." % str(m))
-        return np.array([self.permuted_rank() for i in range(m)])
+        
+        n = len(self.genes)
+        maxstr = len(max(self.genes, key=len))
+        genes = np.empty([m, n], dtype=('str', maxstr))
+        scores = np.empty([m, n], dtype='float')
+        
+        for i in range(m):
+            genes[i], scores[i] = self.permuted_rank()
+        
+        return (genes, scores)
         
     def rank_by_metric(self, unranked, categories):
-        """Returns an array of ranking indices for gene labels according to a
-        metric used to score each line of data. The category (phenotype) labels
-        must be taken into account in the metrics.
+        """Returns sorted arrays of gene labels and correlation scores,
+        generated according to a ranking metric used to score each
+        line of data. The category (phenotype) labels must be taken into account
+        in the metrics.
         """
         cat1 = np.where(categories == self.phenos[0])
         cat2 = np.where(categories != self.phenos[0])
@@ -57,7 +79,7 @@ class Gene_Expression_Profile():
         scores = self.metric(data1, data2)
         indices = np.argsort(scores)
         
-        return unranked[indices]
+        return (unranked[indices], scores[indices])
     
     @property
     def metric(self):
