@@ -36,14 +36,17 @@ class Gene_Expression_Profile():
         n = len(self.genes)
         maxstr = len(max(self.genes, key=len))
         # permuted_genes = np.tile(self.genes, (m, 1))
-        permuted_genes = np.empty([m, n], dtype=('str', maxstr))
-        phenos = np.tile(self.phenos, (m, 1))
+        # permuted_genes = np.empty([m, n], dtype=('str', maxstr))
+        permuted_genes = []
+        # phenos = np.tile(self.phenos, (m, 1))
         print(permuted_genes)
         for row in range(m):
-            np.random.shuffle(phenos[row])
-            permuted_genes[row] = self.rank_by_metric(self.genes, phenos[row])
+            # np.random.shuffle(phenos[row]) # 2.423s
+            # permuted_genes[row] = self.rank_by_metric(self.genes, phenos[row])
+            permuted_genes.append(self.permuted_rank())
         
-        print(phenos)
+        # print(phenos)
+        permuted_genes = np.array(permuted_genes)
         print(permuted_genes)
         
         return permuted_genes

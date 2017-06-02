@@ -35,7 +35,6 @@ class Analysis():
         self.gep.select_metric(self.rankby)
         ranked = self.gep.rank_genes()
         print(ranked)
-        print(self.gep.genes)
         permuted = self.gep.permutations(self.permut)
         
         # Loop analysis over gene sets. 
