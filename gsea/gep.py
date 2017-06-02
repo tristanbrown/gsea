@@ -19,14 +19,14 @@ class Gene_Expression_Profile():
         """Gives the ranked and sorted gene labels according to the initialized
         data."""
         print("Ranking genes.")
-        return self.rank_by_metric(self.phenos, self.metric)
+        return self.rank_by_metric(np.copy(self.genes), self.phenos)
     
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
         phenotype classes."""
         # print("Permuting and ranking genes.")
-        return self.rank_by_metric(np.random.permutation(self.phenos),
-                                        self.metric)
+        return self.rank_by_metric(np.copy(self.genes), 
+                                        np.random.permutation(self.phenos))
     
     def permutations(self, m):
         """Returns an m x n array of m ranked n-length gene arrays, each
@@ -57,7 +57,7 @@ class Gene_Expression_Profile():
         
         return permuted_genes
     
-    def rank_by_metric(self, categories, metric):
+    def rank_by_metric(self, unranked, categories):
         """Returns a ranked and sorted array of gene labels according to a
         metric used to score each line of data. The category (phenotype) labels
         must be taken into account in the metrics.
@@ -68,14 +68,13 @@ class Gene_Expression_Profile():
         data1 = self.data[:,cat1[0]]
         data2 = self.data[:,cat2[0]]
         
-        print(data1)
-        print(data2)
+        scores = self.metric(data1, data2)
+        indices = np.argsort(scores)
         
-        scores = metric(data1, data2)
+        ranked = unranked[indices]
+        print(ranked)
         
-        ranked_genes = np.copy(self.genes)
-        
-        return ranked_genes
+        return ranked
     
     def select_metric(self, label=None):
         """Select a method for assigning a score to 1d arrays of numbers."""
@@ -86,5 +85,10 @@ class Gene_Expression_Profile():
         print("Metric set as %s." % label)
     
     def signal2noise(self, data1, data2):
+        mean1 = np.mean(data1, axis=1)
+        mean2 = np.mean(data2, axis=1)
         
-        return 0
+        std1 = np.std(data1, axis=1)
+        std2 = np.std(data2, axis=1)
+        
+        return (mean2 - mean1)/(std1 + std2)
