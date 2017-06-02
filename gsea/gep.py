@@ -19,11 +19,16 @@ class Gene_Expression_Profile():
         self.genes = genes
         self.phenos = phenos
         
-    def rank_genes(self):
+    @property
+    def ranked(self):
         """Gives the ranked and sorted gene labels according to the initialized
         data."""
-        print("Ranking genes.")
-        return self.rank_by_metric(self.genes, self.phenos)
+        try:
+            return self._ranked
+        except:
+            print("Ranking genes.")
+            self._ranked = self.rank_by_metric(self.genes, self.phenos)
+            return self._ranked
     
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
