@@ -19,9 +19,6 @@ class Gene_Expression_Profile():
         self.genes = genes
         self.phenos = phenos
         
-        # Setting the default metric:
-        self.select_metric('s2n')
-        
     def rank_genes(self):
         """Gives the ranked and sorted gene labels according to the initialized
         data."""
@@ -57,16 +54,30 @@ class Gene_Expression_Profile():
         
         return unranked[indices]
     
-    def select_metric(self, label=None):
+    @property
+    def metric(self):
+        try:
+            return self._metric
+        except:
+            self.metric = 's2n' # Default metric.
+            return self._metric
+    
+    @metric.setter
+    def metric(self, label=None):
         """Select a method for assigning a score to 1d arrays of numbers."""
-        if label == None:
+        if label == 's2n':
+            self._metric = self.signal2noise
+        elif label == 'diff':
+            self._metric = self.diff_classes
+        elif label == 'rat':
+            self._metric = self.ratio_classes
+        else:
             raise
-        elif label == 's2n':
-            self.metric = self.signal2noise
         print("Metric set as %s." % label)
     
+    ##### Ranking Metrics #####
+    
     def signal2noise(self, data1, data2):
-        """A ranking metric based on two phenotype categories."""
         mean1 = np.mean(data1, axis=1)
         mean2 = np.mean(data2, axis=1)
         
@@ -74,3 +85,15 @@ class Gene_Expression_Profile():
         std2 = np.std(data2, axis=1)
         
         return (mean2 - mean1)/(std1 + std2)
+    
+    def diff_classes(self, data1, data2):
+        mean1 = np.mean(data1, axis=1)
+        mean2 = np.mean(data2, axis=1)
+        
+        return mean2 - mean1
+    
+    def ratio_classes(self, data1, data2):
+        mean1 = np.mean(data1, axis=1)
+        mean2 = np.mean(data2, axis=1)
+        
+        return mean2/mean1

@@ -32,7 +32,7 @@ class Analysis():
         
         self.generate_gep(gep_file)
         
-        self.gep.select_metric(self.rankby)
+        self.gep.metric = self.rankby
         ranked = self.gep.rank_genes()
         permuted = self.gep.permutations(self.permut)
         
