@@ -39,22 +39,46 @@ class Gene_Expression_Profile():
             return self._score
         except:
             print("Ranking genes.")
-            a = self.ranked
+            self.ranked
             return self._score
     
-    def permuted_rank(self):
-        """Gives the ranked and sorted gene labels after permuting the
-        phenotype classes."""
-        # print("Permuting and ranking genes.")
-        return self.rank_by_metric(self.genes, 
-                                        np.random.permutation(self.phenos))
+    @property
+    def num_perm(self):
+        try:
+            return self._num_perm
+        except:
+            self._num_perm = 1000
+            return self._num_perm
     
-    def permutations(self, m):
+    @num_perm.setter
+    def num_perm(self, value):
+        self._num_perm = value
+    
+    @property
+    def permutations(self):
+        try:
+            return self._permutations
+        except:
+            self._permutations, self._permscores =(
+                self.permute(self.num_perm)
+                )
+            return self._permutations
+    
+    @property
+    def permscores(self):
+        try:
+            return self._permscores
+        except:
+            self.permutations
+            return self._permscores
+    
+    def permute(self, m):
         """Returns an m x n array of m ranked n-length gene arrays, each
         generated from a permutation of the phenotype classes."""
         print("Permuting phenotypes and ranking genes %s times." % str(m))
         
         n = len(self.genes)
+        
         maxstr = len(max(self.genes, key=len))
         genes = np.empty([m, n], dtype=('str', maxstr))
         scores = np.empty([m, n], dtype='float')
@@ -64,6 +88,13 @@ class Gene_Expression_Profile():
         
         return (genes, scores)
         
+    def permuted_rank(self):
+        """Gives the ranked and sorted gene labels after permuting the
+        phenotype classes."""
+        # print("Permuting and ranking genes.")
+        return self.rank_by_metric(self.genes, 
+                                        np.random.permutation(self.phenos))
+    
     def rank_by_metric(self, unranked, categories):
         """Returns sorted arrays of gene labels and correlation scores,
         generated according to a ranking metric used to score each

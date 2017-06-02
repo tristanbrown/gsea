@@ -33,16 +33,18 @@ class Analysis():
         self.generate_gep(gep_file)
         
         self.gep.metric = self.rankby
-        scores = self.gep.score
+        self.gep.num_perm = self.permut
         ranked = self.gep.ranked
+        scores = self.gep.score
         
-        permuted, perm_scores = self.gep.permutations(self.permut)
+        permuted = self.gep.permutations
+        permscores = self.gep.permscores
         
         print(self.gep.genes)
         print(ranked)
         print(scores)
         print(permuted)
-        print(perm_scores)
+        print(permscores)
         
         # Loop analysis over gene sets. 
         
