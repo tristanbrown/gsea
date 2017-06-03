@@ -30,6 +30,12 @@ class FileStructureTestCase(unittest.TestCase):
         assert len(geneset_data[0]) == 20
         assert len(geneset_data[-1]) == 77
     
+    def test_geneset_extract(self):
+        geneset_file = dataprep.IO('pathways.txt', 'data')
+        data = geneset_file.load_arb_rows(delim='\t', type='str', skipcol=1)
+        print(data)
+        
+    
     def test_full_analysis(self):
         A = analysis.Analysis(config.analysis)
         A.analyzefiles('leukemia.txt', 'pathways.txt', 'test_out.csv',
