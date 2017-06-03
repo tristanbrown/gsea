@@ -34,17 +34,22 @@ class Analysis():
         
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
+        
         ranked = self.gep.ranked
-        scores = self.gep.score
+        corr = self.gep.score
         
         permuted = self.gep.permutations
-        permscores = self.gep.permscores
+        permcorr = self.gep.permscores
         
         print(self.gep.genes)
         print(ranked)
-        print(scores)
+        print(corr)
         print(permuted)
-        print(permscores)
+        print(permcorr)
+        
+        # S = 
+        
+        # ES = self.calc_ES(ranked, corr, S)
         
         # Loop analysis over gene sets. 
         
@@ -68,4 +73,25 @@ class Analysis():
         # nes = NES_calc(es, es_p)
         # return (nes, p_stat)
         return geneset[:2]
+    
+    def calc_ES(self, ranked, corr, geneset):
+        """Takes an array of gene labels from a GEP, the correlation scores by
+        which they were ranked, and an independent gene set. Returns the ES, as
+        the maximum value of the running sum of the correlation-weighted 
+        fraction of ranked genes present in the geneset. 
+        """
+        print("Calculating Enrichment Score.")
+        N = len(ranked)
+        Nh = len(geneset)
         
+        hits = np.in1d(ranked, geneset)
+        hits_wtd = abs(hits * corr)**self.p_weight
+        
+        P_hit = np.cumsum(hits_wtd / hits_wtd[-1])
+        P_miss = np.cumsum((1 - hits)/(N - Nh))
+        print(hits)
+        print(P_hit)
+        print(misses)
+        print(P_miss)
+        
+        return numpy.amax(P_hit - P_miss)

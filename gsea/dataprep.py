@@ -37,6 +37,13 @@ class IO():
                                 skip_header=1, usecols=range(1, num_col+1))
         
         return (data, row_labels, col_labels)
+        
+    def load_unequal_arrays(self, delim=',', datatype='int', skiprow=0, 
+                                skipcol=0)
+        """
+        """
+        with open(self.fn, 'r') as file:
+            f.readline()
     
     def row_analysis(self, func, *args, delim=','):
         """Applies the given analysis to every row in a file, returning the 
