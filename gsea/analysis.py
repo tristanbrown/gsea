@@ -46,7 +46,7 @@ class Analysis():
         pr.enable()
         ESnull = self.ES_null
         pr.disable()
-        pr.dump_stats('test/ESnull11.profile')
+        pr.dump_stats('test/ESnull14.profile')
         print(ESnull)
         
         # Write the data to an output file. 
@@ -107,7 +107,7 @@ class Analysis():
         try:
             return self._ES
         except:
-            self._ES = self.calc_ES(self.gep.corr, self.hits, self.p_weight, self.miss_wtd)
+            self._ES = self.calc_ES(self.gep.corr)
             return self._ES
     
     @property
@@ -131,35 +131,32 @@ class Analysis():
         try:
             return self._ES_null
         except:
-            args = (self.hits, self.p_weight, self.miss_wtd)
-            self._ES_null = [self.calc_ES(row, *args)
-                                for row in self.gep.permcorrs]
+            self._ES_null = [self.calc_ES(row)
+                                for row in list(self.gep.permcorrs)]
             return self._ES_null
-            # pass
     
     @property
-    def miss_wtd(self):
+    def Nh(self):
         try:
-            return self._miss_wtd
+            return self._Nh
         except:
-            N = len(self.genes)
-            Nh = np.vstack(np.array([len(S) for S in self.genesets]))
-            self._miss_wtd = (1 - self.hits)/(N - Nh)
-            return self._miss_wtd
+            self._Nh = np.vstack(np.array([len(S) for S in self.genesets]))
+            return self._Nh
     
-    def calc_ES(self, corr, hits, p, miss_wtd):
+    def calc_ES(self, corr):
         """Takes an array of correlation scores. Returns the ES, as
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
         
-        
+        N = len(self.genes)
         
         sort = np.argsort(corr)
-        hits = hits[:,sort]
+        hits = self.hits[:,sort]
 
-        hits_wtd = abs(hits * corr[sort])**p
-        hits_sum, P_miss = np.cumsum(np.array([hits_wtd, miss_wtd[:,sort]]), axis=-1)
+        hits_wtd = abs(hits * corr[sort])**self.p_weight
+        miss_wtd = (1 - hits)/(N - self.Nh)
+        hits_sum, P_miss = np.cumsum(np.array([hits_wtd, miss_wtd]), axis=-1)
         P_hit = np.nan_to_num(hits_sum / np.vstack(hits_sum[:,-1]))
             
         maxdev = np.amax(P_hit - P_miss, axis=-1)
