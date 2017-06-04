@@ -1,8 +1,10 @@
 import unittest
+import numpy as np
 
 from gsea import config
 from gsea import dataprep
 from gsea import analysis
+
 
 class FileStructureTestCase(unittest.TestCase):
     def setUp(self):
@@ -13,7 +15,7 @@ class FileStructureTestCase(unittest.TestCase):
         gep_data = gep_file.load_array_with_labels(delim='\t')
         # print("Gene Expression Data:")
         # print(gep_data)
-        data, genes, phenos = gep_data
+        data, phenos, genes = gep_data
         assert len(data) == len(genes)
         assert len(data[0]) == len(phenos)
         assert data[0][0] == -13
@@ -26,8 +28,6 @@ class FileStructureTestCase(unittest.TestCase):
         labels, data = geneset_file.load_arb_rows(delim='\t', 
                                                     type='str', skipcol=1)
         
-        print(labels)
-        print(data)
         assert len(data) == 522
         
         # print(self.calc_ES(ranked, corr,
@@ -42,4 +42,8 @@ class FileStructureTestCase(unittest.TestCase):
         A = analysis.Analysis(
             'leukemia.txt', 'pathways.txt', 'data', config.analysis
                 )
+        sum_hits = np.cumsum(A.hits, axis=-1)
+        assert sum_hits[0][-1] == 12
+        assert sum_hits[-1][-1] == 37
+        
         A.analyzefiles('test_out.csv', 'data')

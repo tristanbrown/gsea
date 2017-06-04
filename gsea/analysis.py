@@ -33,7 +33,8 @@ class Analysis():
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
 
-        print(self.ES)
+        print(self.hits)
+        # print(self.ES)
         
         # Calculate NES and P-stat
         
@@ -108,7 +109,13 @@ class Analysis():
         """Gives a 2D boolean array in which each row represents the presence of
         the genes in a particular gene set.
         """
-        pass
+        try:
+            return self._hits
+        except:
+            self._hits =(
+                np.array([np.in1d(self.genes, S) for S in self.genesets])
+                )
+            return self._hits
     
     @property
     def ES_null(self):
@@ -123,16 +130,16 @@ class Analysis():
                 for name, S in self.genesets.items()}
             return self._ES_null
     
-    def calc_ES(self, ranked, corr, geneset):
+    def calc_ES(self, genes, corr, geneset):
         """Takes an array of gene labels from a GEP, the correlation scores by
         which they were ranked, and an independent gene set. Returns the ES, as
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        N = len(ranked)
+        N = len(genes)
         Nh = len(geneset)
         
-        hits = np.in1d(ranked, geneset).reshape(ranked.shape)
+        hits = np.in1d(genes, geneset)
         if not np.any(hits):
             P_hit = hits
         else:
