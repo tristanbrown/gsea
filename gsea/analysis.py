@@ -46,8 +46,9 @@ class Analysis():
         pr.enable()
         ESnull = self.ES_null
         pr.disable()
-        pr.dump_stats('test/ESnull14.profile')
+        pr.dump_stats('test/ESnull16.profile')
         print(ESnull)
+        print(len(ESnull))
         
         # Write the data to an output file. 
         
@@ -131,8 +132,10 @@ class Analysis():
         try:
             return self._ES_null
         except:
-            self._ES_null = [self.calc_ES(row)
-                                for row in list(self.gep.permcorrs)]
+            ES_null = np.array(
+                [self.calc_ES(row) for row in list(self.gep.permcorrs)]
+                )
+            self._ES_null = ES_null.T # Each row goes with one gene set ES. 
             return self._ES_null
     
     @property
@@ -163,3 +166,18 @@ class Analysis():
 
         return maxdev
     
+    @property
+    def p_values(self):
+        try:
+            return self._p
+        except:
+            sets = len(self.ES)
+            self._p = [self.calc_p(self.ES[s], self.ES_null[s])
+                            for s in range(sets)]
+            return self._p
+    
+    def calc_p(self, obs, null):
+        """Takes a number representing an observation, and an array of numbers representing the null-hypothesis distribution. Returns the estimated
+        nominal p-value for that observation. 
+        """
+        pass
