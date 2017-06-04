@@ -19,15 +19,75 @@ class Gene_Expression_Profile():
         self.genes = genes
         self.phenos = phenos
         
-        # Setting the default metric:
-        self.select_metric('s2n')
-        
-    def rank_genes(self):
+    @property
+    def ranked(self):
         """Gives the ranked and sorted gene labels according to the initialized
         data."""
-        print("Ranking genes.")
-        return self.rank_by_metric(self.genes, self.phenos)
+        try:
+            return self._ranked
+        except:
+            print("Ranking genes.")
+            self._ranked, self._score =( 
+                self.rank_by_metric(self.genes, self.phenos)
+                )
+            return self._ranked
     
+    @property
+    def score(self):
+        """Gives the sorted scores for ranked gene labels."""
+        try:
+            return self._score
+        except:
+            print("Ranking genes.")
+            self.ranked
+            return self._score
+    
+    @property
+    def num_perm(self):
+        try:
+            return self._num_perm
+        except:
+            self._num_perm = 1000
+            return self._num_perm
+    
+    @num_perm.setter
+    def num_perm(self, value):
+        self._num_perm = value
+    
+    @property
+    def permutations(self):
+        try:
+            return self._permutations
+        except:
+            self._permutations, self._permscores =(
+                self.permute(self.num_perm)
+                )
+            return self._permutations
+    
+    @property
+    def permscores(self):
+        try:
+            return self._permscores
+        except:
+            self.permutations
+            return self._permscores
+    
+    def permute(self, m):
+        """Returns an m x n array of m ranked n-length gene arrays, each
+        generated from a permutation of the phenotype classes."""
+        print("Permuting phenotypes and ranking genes %s times." % str(m))
+        
+        n = len(self.genes)
+        
+        maxstr = len(max(self.genes, key=len))
+        genes = np.empty([m, n], dtype=('str', maxstr))
+        scores = np.empty([m, n], dtype='float')
+        
+        for i in range(m):
+            genes[i], scores[i] = self.permuted_rank()
+        
+        return (genes, scores)
+        
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
         phenotype classes."""
@@ -35,16 +95,11 @@ class Gene_Expression_Profile():
         return self.rank_by_metric(self.genes, 
                                         np.random.permutation(self.phenos))
     
-    def permutations(self, m):
-        """Returns an m x n array of m ranked n-length gene arrays, each
-        generated from a permutation of the phenotype classes."""
-        print("Permuting phenotypes and ranking genes %s times." % str(m))
-        return np.array([self.permuted_rank() for i in range(m)])
-        
     def rank_by_metric(self, unranked, categories):
-        """Returns an array of ranking indices for gene labels according to a
-        metric used to score each line of data. The category (phenotype) labels
-        must be taken into account in the metrics.
+        """Returns sorted arrays of gene labels and correlation scores,
+        generated according to a ranking metric used to score each
+        line of data. The category (phenotype) labels must be taken into account
+        in the metrics.
         """
         cat1 = np.where(categories == self.phenos[0])
         cat2 = np.where(categories != self.phenos[0])
@@ -55,18 +110,32 @@ class Gene_Expression_Profile():
         scores = self.metric(data1, data2)
         indices = np.argsort(scores)
         
-        return unranked[indices]
+        return (unranked[indices], scores[indices])
     
-    def select_metric(self, label=None):
+    @property
+    def metric(self):
+        try:
+            return self._metric
+        except:
+            self.metric = 's2n' # Default metric.
+            return self._metric
+    
+    @metric.setter
+    def metric(self, label=None):
         """Select a method for assigning a score to 1d arrays of numbers."""
-        if label == None:
+        if label == 's2n':
+            self._metric = self.signal2noise
+        elif label == 'diff':
+            self._metric = self.diff_classes
+        elif label == 'rat':
+            self._metric = self.ratio_classes
+        else:
             raise
-        elif label == 's2n':
-            self.metric = self.signal2noise
         print("Metric set as %s." % label)
     
+    ##### Ranking Metrics #####
+    
     def signal2noise(self, data1, data2):
-        """A ranking metric based on two phenotype categories."""
         mean1 = np.mean(data1, axis=1)
         mean2 = np.mean(data2, axis=1)
         
@@ -74,3 +143,15 @@ class Gene_Expression_Profile():
         std2 = np.std(data2, axis=1)
         
         return (mean2 - mean1)/(std1 + std2)
+    
+    def diff_classes(self, data1, data2):
+        mean1 = np.mean(data1, axis=1)
+        mean2 = np.mean(data2, axis=1)
+        
+        return mean2 - mean1
+    
+    def ratio_classes(self, data1, data2):
+        mean1 = np.mean(data1, axis=1)
+        mean2 = np.mean(data2, axis=1)
+        
+        return mean2/mean1

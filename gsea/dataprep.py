@@ -5,6 +5,7 @@ and put it into numpy arrays to be usable by other functions.
 
 import os
 import csv
+import re
 import numpy as np
 
 class IO():
@@ -29,7 +30,7 @@ class IO():
         as specifying the types for the labels and data. 
         """
         with open(self.fn, 'r') as f:
-            col_labels = np.array(f.readline().split()[1:], dtype=coltype)
+            col_labels = np.array(f.readline().split(delim)[1:], dtype=coltype)
         num_col = len(col_labels)
         row_labels = np.genfromtxt(self.fn, delimiter=delim, dtype=rowtype, 
                                 skip_header=1, usecols=0)
@@ -37,6 +38,19 @@ class IO():
                                 skip_header=1, usecols=range(1, num_col+1))
         
         return (data, row_labels, col_labels)
+        
+    def load_arb_rows(self, delim=',', type='int', skipcol=0):
+        """Used for extracting data from text files with labeled rows of
+        arbitrary length. 
+        Returns a dict where the key is the first item from each row, and the 
+        value is a numpy array of the remaining items. 
+        """
+        with open(self.fn, 'r') as f:
+            rows = {}
+            for row in f.readlines():
+                values = re.split(delim+'|\n', row)[:-1]
+                rows[values[0]] = np.array(values[1+skipcol:], dtype=type)
+        return rows
     
     def row_analysis(self, func, *args, delim=','):
         """Applies the given analysis to every row in a file, returning the 
