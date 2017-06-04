@@ -46,7 +46,7 @@ class Analysis():
         pr.enable()
         ESnull = self.ES_null
         pr.disable()
-        pr.dump_stats('test/ESnull4.profile')
+        pr.dump_stats('test/ESnull5.profile')
         print(ESnull)
         
         # Write the data to an output file. 
@@ -155,10 +155,11 @@ class Analysis():
         sort = np.argsort(corr)
         hits = self.hits[:,sort]
 
-        hits_wtd = np.cumsum(abs(hits * corr[sort])**self.p_weight, axis=-1)
-        P_hit = np.nan_to_num(hits_wtd / np.vstack(hits_wtd[:,-1]))
+        hits_wtd = abs(hits * corr[sort])**self.p_weight
+        miss_wtd = (1 - hits)/(N - self.Nh)
+        hits_sum, P_miss = np.cumsum(np.array([hits_wtd, miss_wtd]), axis=-1)
+        P_hit = np.nan_to_num(hits_sum / np.vstack(hits_sum[:,-1]))
             
-        P_miss = np.cumsum((1 - hits)/(N - self.Nh), axis=-1)
         maxdev = np.amax(P_hit - P_miss, axis=-1)
 
         return maxdev
