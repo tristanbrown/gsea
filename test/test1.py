@@ -21,18 +21,11 @@ class FileStructureTestCase(unittest.TestCase):
         assert genes[0] == 'STAT1'
         assert genes[-1] == 'TUBA1'
     
-    def test_gene_set_looping(self):
-        geneset_file = dataprep.IO('pathways.txt', 'data')
-        f = lambda x,y: x
-        geneset_data = geneset_file.row_analysis(f, [], delim='\t')
-        # print(geneset_data)
-        assert len(geneset_data) == 522
-        assert len(geneset_data[0]) == 20
-        assert len(geneset_data[-1]) == 77
-    
     def test_geneset_extract(self):
         geneset_file = dataprep.IO('pathways.txt', 'data')
         data = geneset_file.load_arb_rows(delim='\t', type='str', skipcol=1)
+        
+        assert len(data) == 522
         
         # print(self.calc_ES(ranked, corr,
                 # self.geneset['41bbPathway']))
@@ -43,6 +36,7 @@ class FileStructureTestCase(unittest.TestCase):
         
     
     def test_full_analysis(self):
-        A = analysis.Analysis(config.analysis)
-        A.analyzefiles('leukemia.txt', 'pathways.txt', 'test_out.csv',
-                        config.path)
+        A = analysis.Analysis(
+            'leukemia.txt', 'pathways.txt', 'data', config.analysis
+                )
+        A.analyzefiles('test_out.csv', 'data')

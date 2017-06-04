@@ -10,74 +10,73 @@ from gsea.gep import Gene_Expression_Profile
 class Analysis():
     """
     """
-    def __init__(self, params):
+    def __init__(self, gep_name, geneset_name, in_path, params):
         
         self.rankby = params['rankby']
         self.permut = params['permut']
         self.p_weight = params['p_weight']
+        
+        self.gep_file = IO(gep_name, in_path)
+        self.gs_file = IO(geneset_name, in_path)
     
-    def analyzefiles(self, gep_name, set_name, out_name, paths):
-        """Performs the complete GSEA analysis, given filenames and paths.
+    def analyzefiles(self, out_name, out_path):
+        """Performs the complete GSEA analysis, given an output file location.
         Creates ranked gene expression profiles and uses them for each row in a
         file containing multiple gene sets. 
         """
-        
-        # Find the input and output file locations. 
+        # Find the output file location. 
     
-        gep_file = IO(gep_name, paths['input'])
-        geneset_file = IO(set_name, paths['input'])
-        out_file = IO(out_name, paths['output'])
+        out_file = IO(out_name, out_path)
         
         # Create ranked and permuted/ranked data.
         
-        self.generate_gep(gep_file)
-        
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
-        
-        ranked = self.gep.ranked
-        corr = self.gep.score
-        
-        permuted = self.gep.permutations
-        permcorr = self.gep.permscores
-        
-        print(self.gep.genes)
-        print(ranked)
-        print(corr)
-        print(permuted)
-        print(permcorr)
-        
-        self.generate_genesets(geneset_file)
-        
-        ES = {name : self.calc_ES(ranked, corr, S)
-                        for name, S in self.geneset.items()}
-        print(ES.values())
+
+        print(self.ES.values())
         
         # Calculate NES and P-stat
         
         # Write the data to an output file. 
         
-        results = ES
+        results = self.ES
         out_file.writecsv(results)
     
-    #Convert these generate functions into @property types. 
-    def generate_gep(self, file):
-        """Creates a Gene Expression Profile object from an IO file object.
+    @property
+    def gep(self):
+        """If not found, creates a Gene Expression Profile object from an IO
+        file object.
         """
-        gep_data = file.load_array_with_labels(delim='\t')
-        self.gep = Gene_Expression_Profile(*gep_data)
+        try:
+            return self._gep
+        except:
+            gep_data = self.gep_file.load_array_with_labels(delim='\t')
+            self._gep = Gene_Expression_Profile(*gep_data)
+            return self._gep
     
-    def generate_genesets(self, file):
-        """Creates a dictionary of gene sets from an IO file object."""
-        self.geneset = file.load_arb_rows(delim='\t', type='str', skipcol=1)
+    @property
+    def genesets(self):
+        """If not found, creates a dictionary of gene sets from an IO file
+        object."""
+        try:
+            return self._genesets
+        except:
+            self._genesets =(
+                self.gs_file.load_arb_rows(delim='\t', type='str', skipcol=1)
+                )
+            return self._genesets
     
-    def analyzeset(self, geneset, ranked, permuted):
-        # es = ES_calc(self.ranked, self.params['p_weight'])
-        # es_p = ES_P_calc(self.permuted, self.params['p_weight'])
-        # p_stat = P_calc(es, es_p)
-        # nes = NES_calc(es, es_p)
-        # return (nes, p_stat)
-        return geneset[:2]
+    @property
+    def ES(self):
+        """If not found, runs the calculation to generate a dictionary of
+        Enrichment Scores, labeled by gene set title. 
+        """
+        try:
+            return self._ES
+        except:
+            self._ES = {name: self.calc_ES(self.gep.ranked, self.gep.corr, S)
+                                for name, S in self.genesets.items()}
+            return self._ES
     
     def calc_ES(self, ranked, corr, geneset):
         """Takes an array of gene labels from a GEP, the correlation scores by

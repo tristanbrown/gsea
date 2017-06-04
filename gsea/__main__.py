@@ -17,8 +17,8 @@ def main(args=None):
     
     # Analyze the data and write the results.
     
-    A = Analysis(config.analysis)
-    A.analyzefiles(args[0], args[1], out_name, config.path)
+    A = Analysis(args[0], args[1], config.path['input'], config.analysis)
+    A.analyzefiles(out_name, config.path['output'])
 
 if __name__ == "__main__":
     main()

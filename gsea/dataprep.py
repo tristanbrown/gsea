@@ -52,15 +52,6 @@ class IO():
                 rows[values[0]] = np.array(values[1+skipcol:], dtype=type)
         return rows
     
-    def row_analysis(self, func, *args, delim=','):
-        """Applies the given analysis to every row in a file, returning the 
-        outputs as a list. 
-        """
-        with open(self.fn, 'r') as file:
-            outputs = [func(row.split(delim), *args)
-                        for row in file.readlines()]
-        return outputs
-    
     def writecsv(self, data):
         with open(self.fn, 'w', newline='\n') as f:
             writer = csv.writer(f)

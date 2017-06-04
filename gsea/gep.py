@@ -27,20 +27,20 @@ class Gene_Expression_Profile():
             return self._ranked
         except:
             print("Ranking genes.")
-            self._ranked, self._score =( 
+            self._ranked, self._corr =( 
                 self.rank_by_metric(self.genes, self.phenos)
                 )
             return self._ranked
     
     @property
-    def score(self):
-        """Gives the sorted scores for ranked gene labels."""
+    def corr(self):
+        """Gives the sorted correlation scores for ranked gene labels."""
         try:
-            return self._score
+            return self._corr
         except:
             print("Ranking genes.")
             self.ranked
-            return self._score
+            return self._corr
     
     @property
     def num_perm(self):
@@ -59,18 +59,18 @@ class Gene_Expression_Profile():
         try:
             return self._permutations
         except:
-            self._permutations, self._permscores =(
+            self._permutations, self._permcorrs =(
                 self.permute(self.num_perm)
                 )
             return self._permutations
     
     @property
-    def permscores(self):
+    def permcorrs(self):
         try:
-            return self._permscores
+            return self._permcorrs
         except:
             self.permutations
-            return self._permscores
+            return self._permcorrs
     
     def permute(self, m):
         """Returns an m x n array of m ranked n-length gene arrays, each
@@ -81,12 +81,12 @@ class Gene_Expression_Profile():
         
         maxstr = len(max(self.genes, key=len))
         genes = np.empty([m, n], dtype=('str', maxstr))
-        scores = np.empty([m, n], dtype='float')
+        corrs = np.empty([m, n], dtype='float')
         
         for i in range(m):
-            genes[i], scores[i] = self.permuted_rank()
+            genes[i], corrs[i] = self.permuted_rank()
         
-        return (genes, scores)
+        return (genes, corrs)
         
     def permuted_rank(self):
         """Gives the ranked and sorted gene labels after permuting the
@@ -107,22 +107,23 @@ class Gene_Expression_Profile():
         data1 = self.data[:,cat1[0]]
         data2 = self.data[:,cat2[0]]
         
-        scores = self.metric(data1, data2)
-        indices = np.argsort(scores)
+        corrs = self.metric(data1, data2)
+        indices = np.argsort(corrs)
         
-        return (unranked[indices], scores[indices])
+        return (unranked[indices], corrs[indices])
     
     @property
     def metric(self):
         try:
             return self._metric
         except:
-            self.metric = 's2n' # Default metric.
+            self.metric = 'rat' # Default metric.
             return self._metric
     
     @metric.setter
     def metric(self, label=None):
-        """Select a method for assigning a score to 1d arrays of numbers."""
+        """Select a method for assigning a correlation score to 1d arrays of
+        numbers."""
         if label == 's2n':
             self._metric = self.signal2noise
         elif label == 'diff':
