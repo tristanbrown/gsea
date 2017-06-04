@@ -37,6 +37,8 @@ class Analysis():
         
         # Calculate NES and P-stat
         
+        self.ES_null
+        
         # Write the data to an output file. 
         
         results = self.ES
@@ -78,22 +80,35 @@ class Analysis():
                                 for name, S in self.genesets.items()}
             return self._ES
     
+    @property
+    def ES_null(self):
+        """If not found, generates a 2D array of enrichment scores from the 
+        phenotype-permuted ranked genes for the gene sets.
+        """
+        try:
+            return self._ES_null
+        except:
+            self._ES_null = {name:
+                self.calc_ES(self.gep.permutations, self.gep.permcorrs, S)
+                for name, S in self.genesets.items()}
+            return self._ES_null
+    
     def calc_ES(self, ranked, corr, geneset):
         """Takes an array of gene labels from a GEP, the correlation scores by
         which they were ranked, and an independent gene set. Returns the ES, as
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        N = len(ranked)
+        N = len(self.gep.ranked)
         Nh = len(geneset)
         
-        hits = np.in1d(ranked, geneset)
-        if not np.any(hits):
+        hits = np.in1d(ranked, geneset).reshape(ranked.shape)
+        if np.any(np.invert(np.any(hits, axis=-1))):
             P_hit = hits
         else:
-            hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight)
+            hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight, axis=-1)
             P_hit = hits_wtd / hits_wtd[-1]
             
-        P_miss = np.cumsum((1 - hits)/(N - Nh))
+        P_miss = np.cumsum((1 - hits)/(N - Nh), axis=-1)
         
         return np.amax(P_hit - P_miss)
