@@ -46,7 +46,7 @@ class Analysis():
         pr.enable()
         ESnull = self.ES_null
         pr.disable()
-        pr.dump_stats('test/ESnull5.profile')
+        pr.dump_stats('test/ESnull6.profile')
         print(ESnull)
         
         # Write the data to an output file. 
@@ -107,8 +107,16 @@ class Analysis():
         try:
             return self._ES
         except:
-            self._ES = self.calc_ES(self.gep.corr)
+            self._ES = self.calc_ES(self.gep.corr, self.corrsort)
             return self._ES
+    
+    @property
+    def corrsort(self):
+        try:
+            return self._corrsort
+        except:
+            self._corrsort = np.argsort(self.gep.corr)
+            return self._corrsort
     
     @property
     def hits(self):
@@ -131,10 +139,21 @@ class Analysis():
         try:
             return self._ES_null
         except:
-            self._ES_null = [self.calc_ES(row)
-                                for row in self.gep.permcorrs]
+            ESnull = []
+            corrs = self.gep.permcorrs
+            for row in range(len(corrs)):
+                ESnull.append(self.calc_ES(corrs[row], self.permsort[row]))
+            
+            self._ES_null = ESnull
             return self._ES_null
-            # pass
+    
+    @property
+    def permsort(self):
+        try:
+            return self._permsort
+        except:
+            self._permsort = np.argsort(self.gep.permcorrs)
+            return self._permsort
     
     @property
     def Nh(self):
@@ -144,7 +163,7 @@ class Analysis():
             self._Nh = np.vstack(np.array([len(S) for S in self.genesets]))
             return self._Nh
     
-    def calc_ES(self, corr):
+    def calc_ES(self, corr, sort):
         """Takes an array of correlation scores. Returns the ES, as
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
@@ -152,7 +171,7 @@ class Analysis():
         
         N = len(self.genes)
         
-        sort = np.argsort(corr)
+        # sort = np.argsort(corr)
         hits = self.hits[:,sort]
 
         hits_wtd = abs(hits * corr[sort])**self.p_weight
