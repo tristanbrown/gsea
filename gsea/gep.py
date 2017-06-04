@@ -14,23 +14,9 @@ class Gene_Expression_Profile():
     times to re-rank the gene labels and establish a baseline for significance
     of the unpermuted data. 
     """
-    def __init__(self, data, genes, phenos):
+    def __init__(self, data, phenos):
         self.data = data
-        self.genes = genes
         self.phenos = phenos
-        
-    @property
-    def ranked(self):
-        """Gives the ranked and sorted gene labels according to the initialized
-        data."""
-        try:
-            return self._ranked
-        except:
-            print("Ranking genes.")
-            self._ranked, self._corr =( 
-                self.rank_by_metric(self.genes, self.phenos)
-                )
-            return self._ranked
     
     @property
     def corr(self):
@@ -39,7 +25,7 @@ class Gene_Expression_Profile():
             return self._corr
         except:
             print("Ranking genes.")
-            self.ranked
+            self._corr = self.correlations(self.phenos)
             return self._corr
     
     @property
@@ -55,21 +41,11 @@ class Gene_Expression_Profile():
         self._num_perm = value
     
     @property
-    def permutations(self):
-        try:
-            return self._permutations
-        except:
-            self._permutations, self._permcorrs =(
-                self.permute(self.num_perm)
-                )
-            return self._permutations
-    
-    @property
     def permcorrs(self):
         try:
             return self._permcorrs
         except:
-            self.permutations
+            self._permcorrs =(self.permute(self.num_perm))
             return self._permcorrs
     
     def permute(self, m):
@@ -77,26 +53,17 @@ class Gene_Expression_Profile():
         generated from a permutation of the phenotype classes."""
         print("Permuting phenotypes and ranking genes %s times." % str(m))
         
-        n = len(self.genes)
+        n = len(self.data)
         
-        maxstr = len(max(self.genes, key=len))
-        genes = np.empty([m, n], dtype=('str', maxstr))
         corrs = np.empty([m, n], dtype='float')
         
         for i in range(m):
-            genes[i], corrs[i] = self.permuted_rank()
+            corrs[i] = self.correlations(np.random.permutation(self.phenos))
         
-        return (genes, corrs)
-        
-    def permuted_rank(self):
-        """Gives the ranked and sorted gene labels after permuting the
-        phenotype classes."""
-        # print("Permuting and ranking genes.")
-        return self.rank_by_metric(self.genes, 
-                                        np.random.permutation(self.phenos))
+        return corrs
     
-    def rank_by_metric(self, unranked, categories):
-        """Returns sorted arrays of gene labels and correlation scores,
+    def correlations(self, categories):
+        """Returns array of correlation scores,
         generated according to a ranking metric used to score each
         line of data. The category (phenotype) labels must be taken into account
         in the metrics.
@@ -108,9 +75,9 @@ class Gene_Expression_Profile():
         data2 = self.data[:,cat2[0]]
         
         corrs = self.metric(data1, data2)
-        indices = np.argsort(corrs)
+        # indices = np.argsort(corrs)
         
-        return (unranked[indices], corrs[indices])
+        return corrs
     
     @property
     def metric(self):

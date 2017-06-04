@@ -52,9 +52,21 @@ class Analysis():
         try:
             return self._gep
         except:
-            gep_data = self.gep_file.load_array_with_labels(delim='\t')
-            self._gep = Gene_Expression_Profile(*gep_data)
+            data, phenos, self._genes =( 
+                self.gep_file.load_array_with_labels(delim='\t')
+                )
+            self._gep = Gene_Expression_Profile(data, phenos)
             return self._gep
+    
+    @property
+    def genes(self):
+        """Gives the array of gene labels from the Gene Expression Profile.
+        """
+        try:
+            return self._genes
+        except:
+            self.gep
+            return self._genes
     
     @property
     def genesets(self):
@@ -86,14 +98,15 @@ class Analysis():
             return self._ES
         except:
             self._ES =(
-                np.array([self.calc_ES(self.gep.ranked, self.gep.corr, S)
+                np.array([self.calc_ES(self.genes, self.gep.corr, S)
                                 for S in self.genesets])
                 )
             return self._ES
     
     @property
     def hits(self):
-        """Gives an array representing the 
+        """Gives a 2D boolean array in which each row represents the presence of
+        the genes in a particular gene set.
         """
         pass
     
@@ -116,11 +129,11 @@ class Analysis():
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        N = len(self.gep.ranked)
+        N = len(ranked)
         Nh = len(geneset)
         
         hits = np.in1d(ranked, geneset).reshape(ranked.shape)
-        if np.any(np.invert(np.any(hits, axis=-1))):
+        if not np.any(hits):
             P_hit = hits
         else:
             hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight, axis=-1)

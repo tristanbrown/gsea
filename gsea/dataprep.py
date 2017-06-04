@@ -37,7 +37,7 @@ class IO():
         data = np.genfromtxt(self.fn, delimiter=delim, dtype=datatype, 
                                 skip_header=1, usecols=range(1, num_col+1))
         
-        return (data, row_labels, col_labels)
+        return (data, col_labels, row_labels)
         
     def load_arb_rows(self, delim=',', type='int', skipcol=0):
         """Used for extracting data from text files with labeled rows of
