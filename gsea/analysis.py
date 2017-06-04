@@ -34,11 +34,14 @@ class Analysis():
         self.gep.num_perm = self.permut
 
         print(self.hits)
-        # print(self.ES)
+        print(np.argsort(self.gep.corr))
+        print(self.ES)
+        print(len(self.ES))
         
         # Calculate NES and P-stat
         
-        # self.ES_null
+        self.ES_null
+        print(self.ES_null)
         
         # Write the data to an output file. 
         
@@ -98,10 +101,7 @@ class Analysis():
         try:
             return self._ES
         except:
-            self._ES =(
-                np.array([self.calc_ES(self.genes, self.gep.corr, S)
-                                for S in self.genesets])
-                )
+            self._ES = self.calc_ES(self.gep.corr)
             return self._ES
     
     @property
@@ -125,27 +125,24 @@ class Analysis():
         try:
             return self._ES_null
         except:
-            self._ES_null = {name:
-                self.calc_ES(self.gep.permutations, self.gep.permcorrs, S)
-                for name, S in self.genesets.items()}
+            self._ES_null = [self.calc_ES(row)
+                for row in self.gep.permcorrs]
             return self._ES_null
     
-    def calc_ES(self, genes, corr, geneset):
-        """Takes an array of gene labels from a GEP, the correlation scores by
-        which they were ranked, and an independent gene set. Returns the ES, as
+    def calc_ES(self, corr):
+        """Takes an array of correlation scores. Returns the ES, as
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        N = len(genes)
-        Nh = len(geneset)
+        N = len(self.genes)
+        Nh = np.vstack(np.array([len(S) for S in self.genesets]))
         
-        hits = np.in1d(genes, geneset)
-        if not np.any(hits):
-            P_hit = hits
-        else:
-            hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight, axis=-1)
-            P_hit = hits_wtd / hits_wtd[-1]
+        sort = np.argsort(corr)
+        hits = self.hits[:,sort]
+
+        hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight, axis=-1)
+        P_hit = np.nan_to_num(hits_wtd / np.vstack(hits_wtd[:,-1]))
             
         P_miss = np.cumsum((1 - hits)/(N - Nh), axis=-1)
         
-        return np.amax(P_hit - P_miss)
+        return np.amax(P_hit - P_miss, axis=-1)
