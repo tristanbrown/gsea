@@ -47,24 +47,29 @@ class Analysis():
         print(permuted)
         print(permcorr)
         
-        # S = 
+        self.generate_genesets(geneset_file)
         
-        # ES = self.calc_ES(ranked, corr, S)
+        ES = {name : self.calc_ES(ranked, corr, S)
+                        for name, S in self.geneset.items()}
+        print(ES.values())
         
-        # Loop analysis over gene sets. 
-        
-        results = geneset_file.row_analysis(self.analyzeset, ranked, permuted,
-                                                delim='\t')
+        # Calculate NES and P-stat
         
         # Write the data to an output file. 
         
+        results = ES
         out_file.writecsv(results)
-        
+    
+    #Convert these generate functions into @property types. 
     def generate_gep(self, file):
         """Creates a Gene Expression Profile object from an IO file object.
         """
         gep_data = file.load_array_with_labels(delim='\t')
         self.gep = Gene_Expression_Profile(*gep_data)
+    
+    def generate_genesets(self, file):
+        """Creates a dictionary of gene sets from an IO file object."""
+        self.geneset = file.load_arb_rows(delim='\t', type='str', skipcol=1)
     
     def analyzeset(self, geneset, ranked, permuted):
         # es = ES_calc(self.ranked, self.params['p_weight'])
@@ -80,18 +85,16 @@ class Analysis():
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        print("Calculating Enrichment Score.")
         N = len(ranked)
         Nh = len(geneset)
         
         hits = np.in1d(ranked, geneset)
-        hits_wtd = abs(hits * corr)**self.p_weight
-        
-        P_hit = np.cumsum(hits_wtd / hits_wtd[-1])
+        if not np.any(hits):
+            P_hit = hits
+        else:
+            hits_wtd = np.cumsum(abs(hits * corr)**self.p_weight)
+            P_hit = hits_wtd / hits_wtd[-1]
+            
         P_miss = np.cumsum((1 - hits)/(N - Nh))
-        print(hits)
-        print(P_hit)
-        print(misses)
-        print(P_miss)
         
-        return numpy.amax(P_hit - P_miss)
+        return np.amax(P_hit - P_miss)
