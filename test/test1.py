@@ -37,6 +37,21 @@ class FileStructureTestCase(unittest.TestCase):
         # print(self.calc_ES(ranked, corr,
             # self.geneset['MAP00532_Chondroitin_Heparan_sulfate_biosynthesis']))
         
+    def test_sort_and_mult(self):
+        A = np.array([[1, 8, 4, 6], [3, 1, 6, 9], [6, 4, 0, 1], [9, 5, 3, 1],
+                [0, 4, 5, 3]])
+        B = np.array([[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 1, 0]])
+        f = analysis.Analysis(
+            'leukemia.txt', 'pathways.txt', 'data', config.analysis
+                )
+        print("A:")
+        print(A)
+        print("B")
+        print(B)
+        C = f.sort_and_mult(A, B)
+        print("C:")
+        print(C)
+        
     
     def test_full_analysis(self):
         A = analysis.Analysis(
