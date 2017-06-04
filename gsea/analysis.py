@@ -8,6 +8,7 @@ from gsea.dataprep import IO
 from gsea.gep import Gene_Expression_Profile
 
 import cProfile
+np.set_printoptions(suppress=True)
 
 class Analysis():
     """
@@ -130,7 +131,8 @@ class Analysis():
         try:
             return self._ES_null
         except:
-            self._ES_null = self.calc_ES_null(self.gep.permcorrs)
+            self._ES_null = [self.calc_ES(row)
+                                for row in self.gep.permcorrs]
             return self._ES_null
             # pass
     
@@ -161,46 +163,3 @@ class Analysis():
 
         return maxdev
     
-    def sort_and_mult(self, A, B):
-        x,z = A.shape
-        y = B.shape[0]
-        
-        print(x, y, z)
-        
-        # i1, i0 = np.meshgrid(range(i), range(j), sparse=True)
-        
-        sort = A.argsort(1)
-        # C = np.einsum('ik,jk->ijk', A , B)
-        # x,y,z = C.shape
-        # print(C)
-        # print(x,y,z)
-        # i,j = np.ogrid[0:C_shp[0], 0:C_shp[2]]
-        # print(i)
-        # print(j)
-        # print(sort)
-        # sorted_C = C[i, j, sort]
-        # idx = y*z*sort + z*np.
-        sorted_C = []
-        for n in range(x):
-            sorted_C.append(B[:,sort[n]]*A[n][sort[n]])
-        
-        return np.array(sorted_C)
-        
-    
-    def calc_ES_null(self, corr):
-        """Takes an array of correlation scores. Returns the ES, as
-        the maximum value of the running sum of the correlation-weighted 
-        fraction of ranked genes present in the geneset. 
-        """
-        
-        N = len(self.genes)
-
-        hitcorr = self.sort_and_mult(corr, self.hits)
-
-        hits_wtd = np.cumsum(abs(hitcorr)**self.p_weight, axis=-1)
-        P_hit = np.nan_to_num(hits_wtd / np.vstack(hits_wtd[:,-1]))
-            
-        P_miss = np.cumsum((1 - hits)/(N - self.Nh), axis=-1)
-        maxdev = np.amax(P_hit - P_miss, axis=-1)
-
-        return maxdev
