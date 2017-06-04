@@ -42,15 +42,17 @@ class IO():
     def load_arb_rows(self, delim=',', type='int', skipcol=0):
         """Used for extracting data from text files with labeled rows of
         arbitrary length. 
-        Returns a dict where the key is the first item from each row, and the 
-        value is a numpy array of the remaining items. 
+        Returns a list of the first item from each row, and a list of numpy
+        arrays of the remaining items.
         """
         with open(self.fn, 'r') as f:
-            rows = {}
+            labels = []
+            rows = []
             for row in f.readlines():
                 values = re.split(delim+'|\n', row)[:-1]
-                rows[values[0]] = np.array(values[1+skipcol:], dtype=type)
-        return rows
+                labels.append(values[0])
+                rows.append(np.array(values[1+skipcol:], dtype=type))
+        return (labels, rows)
     
     def writecsv(self, data):
         with open(self.fn, 'w', newline='\n') as f:

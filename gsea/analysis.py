@@ -33,16 +33,16 @@ class Analysis():
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
 
-        print(self.ES.values())
+        print(self.ES)
         
         # Calculate NES and P-stat
         
-        self.ES_null
+        # self.ES_null
         
         # Write the data to an output file. 
         
-        results = self.ES
-        out_file.writecsv(results)
+        # results = self.ES
+        # out_file.writecsv(results)
     
     @property
     def gep(self):
@@ -63,22 +63,39 @@ class Analysis():
         try:
             return self._genesets
         except:
-            self._genesets =(
+            self._setlabels, self._genesets =(
                 self.gs_file.load_arb_rows(delim='\t', type='str', skipcol=1)
                 )
             return self._genesets
     
     @property
+    def setlabels(self):
+        """Returns the labels of the genesets."""
+        try:
+            return self._setlabels
+        except:
+            self.genesets
+            return self._setlabels
+    
+    @property
     def ES(self):
-        """If not found, runs the calculation to generate a dictionary of
+        """If not found, runs the calculation to generate an array of
         Enrichment Scores, labeled by gene set title. 
         """
         try:
             return self._ES
         except:
-            self._ES = {name: self.calc_ES(self.gep.ranked, self.gep.corr, S)
-                                for name, S in self.genesets.items()}
+            self._ES =(
+                np.array([self.calc_ES(self.gep.ranked, self.gep.corr, S)
+                                for S in self.genesets])
+                )
             return self._ES
+    
+    @property
+    def hits(self):
+        """Gives an array representing the 
+        """
+        pass
     
     @property
     def ES_null(self):

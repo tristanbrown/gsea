@@ -23,8 +23,11 @@ class FileStructureTestCase(unittest.TestCase):
     
     def test_geneset_extract(self):
         geneset_file = dataprep.IO('pathways.txt', 'data')
-        data = geneset_file.load_arb_rows(delim='\t', type='str', skipcol=1)
+        labels, data = geneset_file.load_arb_rows(delim='\t', 
+                                                    type='str', skipcol=1)
         
+        print(labels)
+        print(data)
         assert len(data) == 522
         
         # print(self.calc_ES(ranked, corr,
