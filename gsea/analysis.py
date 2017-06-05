@@ -129,6 +129,7 @@ class Analysis():
     
     @property
     def Nh(self):
+        """Gives an array of the number of genes in each geneset."""
         try:
             return self._Nh
         except:
@@ -140,7 +141,6 @@ class Analysis():
         the maximum value of the running sum of the correlation-weighted 
         fraction of ranked genes present in the geneset. 
         """
-        
         N = len(self.genes)
         
         sort = np.argsort(corr)
@@ -158,6 +158,8 @@ class Analysis():
     
     @property
     def p_values(self):
+        """Gives the estimated nominal p-values for each of the gene sets.
+        """
         try:
             return self._p
         except:
@@ -193,6 +195,9 @@ class Analysis():
     
     @property
     def norm_ES(self):
+        """Gives the normalized enrichment scores (NES) for each of the gene
+        sets.
+        """
         try:
             return self._nes
         except:

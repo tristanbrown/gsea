@@ -22,6 +22,8 @@ python path), the output filename, as well as several analysis parameters.
 
 config.py is meant to be easily edited by the user. 
 
+The default filename for outputting the results is "results.csv". 
+
 # Testing
 Run a testing script (e.g. test1.py) as follows:
 

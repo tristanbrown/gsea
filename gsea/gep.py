@@ -30,6 +30,7 @@ class Gene_Expression_Profile():
     
     @property
     def num_perm(self):
+        """The number of class permutations to use."""
         try:
             return self._num_perm
         except:
@@ -42,6 +43,8 @@ class Gene_Expression_Profile():
     
     @property
     def permcorrs(self):
+        """Gives the correlation scores for the phenotype-permuted data sets. 
+        """
         try:
             return self._permcorrs
         except:
@@ -81,10 +84,11 @@ class Gene_Expression_Profile():
     
     @property
     def metric(self):
+        """Returns the function used as a ranking metric."""
         try:
             return self._metric
         except:
-            self.metric = 'rat' # Default metric.
+            self.metric = 's2n' # Default metric.
             return self._metric
     
     @metric.setter
