@@ -1,6 +1,7 @@
 """
-This module loops the Gene Set Enrichment Analysis over a file containing 
-multiple gene sets, producing an output file tabulating the results. 
+This module applies the Gene Set Enrichment Analysis to a file containing 
+multiple gene sets and a file containing gene expression profile data, producing
+an output file tabulating the results. 
 """
 
 import numpy as np

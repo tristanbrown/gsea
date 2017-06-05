@@ -4,7 +4,6 @@ and put it into numpy arrays to be usable by other functions.
 """
 
 import os
-import csv
 import re
 import numpy as np
 
