@@ -37,12 +37,15 @@ class Analysis():
         self.gep.num_perm = self.permut
         
         # Calculate NES and P-stat
+        
         pr = cProfile.Profile()
         pr.enable()
         output = self.p_values
         pr.disable()
         pr.dump_stats('test/ESnull16.profile')
+        print(self.ES)
         print(output)
+        
         
         # Write the data to an output file. 
         
@@ -155,10 +158,11 @@ class Analysis():
         miss_wtd = (1 - hits)/(N - self.Nh)
         hits_sum, P_miss = np.cumsum(np.array([hits_wtd, miss_wtd]), axis=-1)
         P_hit = np.nan_to_num(hits_sum / np.vstack(hits_sum[:,-1]))
-            
-        maxdev = np.amax(P_hit - P_miss, axis=-1)
+        
+        P_diff = P_hit - P_miss
+        maxdev = np.argmax(abs(P_diff), axis=-1)
 
-        return maxdev
+        return P_diff[np.arange(len(P_diff)), maxdev]
     
     @property
     def p_values(self):
@@ -191,3 +195,12 @@ class Analysis():
         """
         idx = np.where(array >= value)[0][0]
         return idx
+    
+    @property
+    def norm_ES(self):
+        """"""
+        try:
+            return self._nes
+        except:
+            
+            return self._nes
