@@ -54,6 +54,20 @@ class IO():
                 rows.append(np.array(values[1+skipcol:], dtype=type))
         return (labels, rows)
     
+    def tabulate_data(self, columns, headers, sortby=None):
+        """Takes a list of data columns, a list of column headers, and a header
+        name to sort the columns. Returns a complete data table. 
+        """
+        table = np.array(columns).T
+        try:
+            sortindex = headers.index(sortby)
+            table = table[columns[sortindex].argsort()[::-1]]
+        except:
+            print("No valid column to sort by.")
+        
+        print(table)
+        return table
+    
     def writecsv(self, data):
         with open(self.fn, 'w', newline='\n') as f:
             writer = csv.writer(f)
