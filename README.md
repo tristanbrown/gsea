@@ -22,11 +22,5 @@ python path), the output filename, as well as several analysis parameters.
 
 config.py is meant to be easily edited by the user. 
 
-# Testing
-Run a testing script (e.g. test1.py) as follows:
-
-    >> python -m unittest test.test1
-
-or all tests via:
-
-    >> python -m unittest discover
+The default filename for outputting the results is "results.csv". 
+The default directory for input and output file locations is "data." 

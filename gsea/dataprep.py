@@ -4,7 +4,6 @@ and put it into numpy arrays to be usable by other functions.
 """
 
 import os
-import csv
 import re
 import numpy as np
 
@@ -56,32 +55,22 @@ class IO():
     
     def tabulate_data(self, columns, headers, sortby=None):
         """Takes a list of data columns, a list of column headers, and a header
-        name to sort the columns. Returns a complete data table. 
+        name to sort the columns. Writes a complete data table to a .csv file. 
         """
         formatted = []
-        
         for col in columns:
             if col.dtype == 'float':
                 formatted.append(["%.3f" % num for num in col])
             else:
                 formatted.append(col)
-        
-        # formatted = [col[col.dtype == 'float'].astype('s', 4)
-                        # for col in columns]
+                
         table = np.array(formatted).T
         try:
             sortindex = headers.index(sortby)
             table = table[columns[sortindex].argsort()[::-1]]
         except:
             print("No valid column to sort by.")
-        
-        print(table)
+            
         np.savetxt(self.fn, table, fmt='%s', delimiter=',', newline='\n', 
                         header=(','.join(headers)), comments='')
-        # return table
-    
-    def writecsv(self, data):
-        with open(self.fn, 'w', newline='\n') as f:
-            writer = csv.writer(f)
-            writer.writerows(data)
     
