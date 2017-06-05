@@ -7,7 +7,6 @@ import numpy as np
 from gsea.dataprep import IO
 from gsea.gep import Gene_Expression_Profile
 
-import cProfile
 np.set_printoptions(suppress=True)
 
 class Analysis():
@@ -31,30 +30,19 @@ class Analysis():
     
         out_file = IO(out_name, out_path)
         
-        # Create ranked and permuted/ranked data.
+        # Create GEP and set its parameters.
         
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
         
         # Calculate NES and P-stat
         
-        pr = cProfile.Profile()
-        pr.enable()
-        output1 = self.p_values
-        output2 = self.norm_ES
-        pr.disable()
-        pr.dump_stats('test/ESnull17.profile')
-        print(self.ES)
-        print(output1)
-        print(output2)
-        
+        results = [self.setlabels, self.norm_ES, self.p_values]
         
         # Write the data to an output file. 
         
-        results = [self.setlabels, self.norm_ES, self.p_values]
         headers = ['Gene Sets', 'NES', 'p']
         out_file.tabulate_data(results, headers, 'NES')
-        # out_file.writecsv(results)
     
     @property
     def gep(self):
