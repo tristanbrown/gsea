@@ -52,13 +52,23 @@ class IO():
                 values = re.split(delim+'|\n', row)[:-1]
                 labels.append(values[0])
                 rows.append(np.array(values[1+skipcol:], dtype=type))
-        return (labels, rows)
+        return (np.array(labels), rows)
     
     def tabulate_data(self, columns, headers, sortby=None):
         """Takes a list of data columns, a list of column headers, and a header
         name to sort the columns. Returns a complete data table. 
         """
-        table = np.array(columns).T
+        formatted = []
+        
+        for col in columns:
+            if col.dtype == 'float':
+                formatted.append(["%.3f" % num for num in col])
+            else:
+                formatted.append(col)
+        
+        # formatted = [col[col.dtype == 'float'].astype('s', 4)
+                        # for col in columns]
+        table = np.array(formatted).T
         try:
             sortindex = headers.index(sortby)
             table = table[columns[sortindex].argsort()[::-1]]
@@ -66,7 +76,9 @@ class IO():
             print("No valid column to sort by.")
         
         print(table)
-        return table
+        np.savetxt(self.fn, table, fmt='%s', delimiter=',', newline='\n', 
+                        header=(','.join(headers)), comments='')
+        # return table
     
     def writecsv(self, data):
         with open(self.fn, 'w', newline='\n') as f:
