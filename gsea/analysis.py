@@ -51,7 +51,9 @@ class Analysis():
         
         # Write the data to an output file. 
         
-        # results = self.ES
+        results = [self.setlabels, self.norm_ES, self.p_values]
+        headers = ['Gene Sets', 'NES', 'p']
+        out_file.tabulate_data(results, headers, 'NES')
         # out_file.writecsv(results)
     
     @property
