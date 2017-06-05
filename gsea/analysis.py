@@ -40,11 +40,13 @@ class Analysis():
         
         pr = cProfile.Profile()
         pr.enable()
-        output = self.p_values
+        output1 = self.p_values
+        output2 = self.norm_ES
         pr.disable()
-        pr.dump_stats('test/ESnull16.profile')
+        pr.dump_stats('test/ESnull17.profile')
         print(self.ES)
-        print(output)
+        print(output1)
+        print(output2)
         
         
         # Write the data to an output file. 
@@ -193,14 +195,29 @@ class Analysis():
         """Takes a value and finds the index of the closest (larger) value in 
         the given array.
         """
-        idx = np.where(array >= value)[0][0]
-        return idx
+        try:
+            idx = np.where(array >= value)[0][0]
+            return idx
+        except:
+            return len(array)
     
     @property
     def norm_ES(self):
-        """"""
         try:
             return self._nes
         except:
-            
+            sets = len(self.ES)
+            self._nes = np.array(
+            [self.calc_NES(self.ES[s], self.ES_null[s]) for s in range(sets)]
+                )
             return self._nes
+    
+    def calc_NES(self, es, perms):
+        """Takes an enrichment score, and normalizes it by the mean of the same-
+        sign part of the permutation distribution. 
+        """
+        if es < 0:
+            mean = np.mean(perms[perms < 0])
+        else:
+            mean = np.mean(perms[perms > 0])
+        return es / abs(mean)
