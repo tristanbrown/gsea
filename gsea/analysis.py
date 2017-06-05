@@ -35,20 +35,14 @@ class Analysis():
         
         self.gep.metric = self.rankby
         self.gep.num_perm = self.permut
-
-        print(self.hits)
-        print(np.argsort(self.gep.corr))
-        print(self.ES)
-        print(len(self.ES))
         
         # Calculate NES and P-stat
         pr = cProfile.Profile()
         pr.enable()
-        ESnull = self.ES_null
+        output = self.p_values
         pr.disable()
         pr.dump_stats('test/ESnull16.profile')
-        print(ESnull)
-        print(len(ESnull))
+        print(output)
         
         # Write the data to an output file. 
         
@@ -172,12 +166,28 @@ class Analysis():
             return self._p
         except:
             sets = len(self.ES)
-            self._p = [self.calc_p(self.ES[s], self.ES_null[s])
-                            for s in range(sets)]
+            self._p = np.array(
+            [self.calc_p(self.ES[s], self.ES_null[s]) for s in range(sets)]
+                )
             return self._p
     
     def calc_p(self, obs, null):
         """Takes a number representing an observation, and an array of numbers representing the null-hypothesis distribution. Returns the estimated
         nominal p-value for that observation. 
         """
-        pass
+        counts, edges = np.histogram(null, bins=100)
+        if obs < 0:
+            counts = np.flip(counts, 0)
+            edges = np.flip(edges, 0) * -1
+        bin = self.find_position(abs(obs), edges)
+        p_dist = counts[bin:]
+        p_value = (p_dist.sum() + 1)/(self.permut + 1)
+
+        return(p_value)
+    
+    def find_position(self, value, array):
+        """Takes a value and finds the index of the closest (larger) value in 
+        the given array.
+        """
+        idx = np.where(array >= value)[0][0]
+        return idx
